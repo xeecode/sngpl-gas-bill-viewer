@@ -4,11 +4,6 @@ An unofficial Flutter app to check your **SNGPL** (Sui Northern Gas Pipelines) g
 
 > **Unofficial.** Not affiliated with, endorsed by or published by SNGPL or any government body. See [Disclaimer](#disclaimer).
 
-## Screenshots
-
-| Home | Bill | History |
-| --- | --- | --- |
-| ![Home](screenshots/home.png) | ![Bill](screenshots/bill.png) | ![History](screenshots/history.png) |
 
 ## Features
 
