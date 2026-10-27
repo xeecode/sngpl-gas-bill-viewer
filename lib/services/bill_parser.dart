@@ -51,14 +51,31 @@ class BillParser {
   static String _at(List<String>? row, int i) =>
       (row != null && i < row.length) ? row[i] : '';
 
+  /// What the server actually said when no bill came back: the text of a
+  /// JavaScript alert, or a short plain-text response. Null for a full page.
+  static String? _serverHint(String body, Document doc) {
+    final alert = RegExp(r'''alert\(\s*(['"])(.*?)\1\s*\)''', dotAll: true)
+        .firstMatch(body);
+    if (alert != null) {
+      final t = _clean(alert.group(2) ?? '');
+      if (t.isNotEmpty) return t;
+    }
+    final text = _clean(doc.body?.text ?? '');
+    if (text.isNotEmpty && text.length <= 200) return text;
+    return null;
+  }
+
   static BillData parse(String body) {
     final doc = html_parser.parse(body);
     final trs = doc.querySelectorAll('tr');
     final rows = trs.map(_cells).where((r) => r.isNotEmpty).toList();
 
     if (_find(rows, 'Total Amount Due') == null) {
-      throw const SngplException(
-        'Bill not found. The captcha may be wrong, or the consumer number is invalid. Try a new captcha.',
+      final hint = _serverHint(body, doc);
+      throw SngplException(
+        hint == null
+            ? 'Bill not found. The captcha may be wrong, or the consumer number is invalid. Try a new captcha.'
+            : 'SNGPL says: $hint',
       );
     }
 
